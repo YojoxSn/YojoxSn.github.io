@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yojoxsn.github.io/sitemap.xml

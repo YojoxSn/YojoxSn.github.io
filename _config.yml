@@ -1,0 +1,7 @@
+# GitHub Pages : on publie le HTML tel quel, sans thème.
+# Ces fichiers et dossiers ne sont pas mis en ligne :
+exclude:
+  - README.md
+  - src
+  - scripts
+  - _modeles

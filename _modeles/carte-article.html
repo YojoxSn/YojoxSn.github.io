@@ -1,0 +1,12 @@
+<!-- Carte à coller dans blog/index.html, dans <div class="grid" id="articles"> (supprimer la carte « Premiers articles en préparation ») -->
+<a class="card reveal" href="/blog/[[SLUG]]/">
+  <span class="pill">[[CATEGORIE]]</span>
+  <h3 style="margin-top:16px">[[TITRE]]</h3>
+  <p>[[RÉSUMÉ EN UNE OU DEUX PHRASES]]</p>
+  <div class="meta">Jonas Sleiman · <time datetime="[[DATE]]">[[DATE_FR]]</time></div>
+  <span class="more">Lire l'article <i>→</i></span>
+</a>
+
+<!-- Entrée à ajouter dans le tableau "blogPost" du JSON-LD de blog/index.html :
+{ "@type": "BlogPosting", "headline": "[[TITRE]]", "url": "https://yojoxsn.github.io/blog/[[SLUG]]/", "datePublished": "[[DATE]]", "author": { "@id": "https://yojoxsn.github.io/#person" } }
+-->

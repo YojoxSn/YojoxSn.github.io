@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--
+  MODÈLE D'ARTICLE — ce dossier (_modeles) n'est pas publié par GitHub Pages.
+  Pour créer un article :
+  1. Copier ce fichier dans blog/<slug>/index.html  (ex : blog/writeup-thm-basic-pentesting/index.html)
+  2. Remplacer tous les [[...]] : TITRE, DESCRIPTION (150-160 caractères), SLUG, DATE (AAAA-MM-JJ), DATE_FR, CATEGORIE
+  3. Écrire le contenu dans <div class="prose">
+  4. Ajouter la carte de l'article dans blog/index.html (voir _modeles/carte-article.html)
+     et l'entrée "blogPost" dans le JSON-LD de blog/index.html
+  5. Ajouter l'URL dans sitemap.xml
+-->
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[[TITRE]] – Jonas Sleiman</title>
+<meta name="description" content="[[DESCRIPTION]]">
+<meta name="author" content="Jonas Sleiman">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://yojoxsn.github.io/blog/[[SLUG]]/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Jonas Sleiman">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="[[TITRE]]">
+<meta property="og:description" content="[[DESCRIPTION]]">
+<meta property="og:url" content="https://yojoxsn.github.io/blog/[[SLUG]]/">
+<meta property="og:image" content="https://yojoxsn.github.io/assets/img/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="article:author" content="https://yojoxsn.github.io/">
+<meta property="article:published_time" content="[[DATE]]">
+<meta property="article:section" content="[[CATEGORIE]]">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="[[TITRE]]">
+<meta name="twitter:description" content="[[DESCRIPTION]]">
+<meta name="twitter:image" content="https://yojoxsn.github.io/assets/img/og-image.png">
+<meta name="theme-color" content="#171721">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.min.css">
+<script>document.documentElement.classList.add('js')</script>
+<script src="/assets/js/main.min.js" defer></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "@id": "https://yojoxsn.github.io/blog/[[SLUG]]/#article",
+      "headline": "[[TITRE]]",
+      "description": "[[DESCRIPTION]]",
+      "url": "https://yojoxsn.github.io/blog/[[SLUG]]/",
+      "mainEntityOfPage": "https://yojoxsn.github.io/blog/[[SLUG]]/",
+      "datePublished": "[[DATE]]",
+      "dateModified": "[[DATE]]",
+      "inLanguage": "fr-FR",
+      "articleSection": "[[CATEGORIE]]",
+      "image": "https://yojoxsn.github.io/assets/img/og-image.png",
+      "author": {
+        "@type": "Person",
+        "@id": "https://yojoxsn.github.io/#person",
+        "name": "Jonas Sleiman",
+        "url": "https://yojoxsn.github.io/"
+      },
+      "publisher": { "@id": "https://yojoxsn.github.io/#person" },
+      "isPartOf": { "@id": "https://yojoxsn.github.io/blog/#blog" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://yojoxsn.github.io/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://yojoxsn.github.io/blog/" },
+        { "@type": "ListItem", "position": 3, "name": "[[TITRE]]", "item": "https://yojoxsn.github.io/blog/[[SLUG]]/" }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#contenu">Aller au contenu</a>
+<div class="glow" aria-hidden="true"></div>
+
+<header class="nav">
+  <nav class="wrap nav-inner" aria-label="Navigation principale">
+    <a href="/" class="brand" aria-label="Jonas Sleiman – accueil">
+      <svg viewBox="0 0 26 26" fill="none" stroke="#ededf3" stroke-width="1.3" aria-hidden="true"><circle cx="13" cy="13" r="3" fill="#ededf3" stroke="none"/><circle cx="13" cy="13" r="7.5" stroke-dasharray="30 8"/><circle cx="13" cy="13" r="12" stroke-dasharray="50 12" opacity=".6"/></svg>
+      <span>Jonas Sleiman</span>
+    </a>
+    <ul class="menu">
+      <li><a href="/">Accueil</a></li>
+      <li><a href="/projets/">Projets</a></li>
+      <li><a href="/blog/" aria-current="page">Blog</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="contenu">
+  <article class="wrap">
+    <div class="page-head">
+      <nav class="crumbs" aria-label="Fil d'Ariane"><ol><li><a href="/">Accueil</a></li><li><a href="/blog/">Blog</a></li><li aria-current="page">[[TITRE]]</li></ol></nav>
+      <h1>[[TITRE]]</h1>
+      <div class="article-meta">
+        <span>Par <a href="/" rel="author">Jonas Sleiman</a></span>
+        <time datetime="[[DATE]]">[[DATE_FR]]</time>
+        <span class="pill">[[CATEGORIE]]</span>
+      </div>
+    </div>
+    <div class="prose">
+      <p>Introduction de l'article…</p>
+      <h2>Première partie</h2>
+      <p>Contenu…</p>
+      <!-- Images : toujours en WebP, avec alt descriptif, largeur/hauteur et lazy loading, ex :
+      <img src="/assets/img/blog/[[SLUG]]/capture-nmap.webp" alt="Résultat du scan Nmap montrant les ports 22 et 80 ouverts" width="900" height="500" loading="lazy" decoding="async"> -->
+    </div>
+    <div class="prose" style="margin-top:56px">
+      <p>Article écrit par <a href="/">Jonas Sleiman</a>, en formation pentest à Orléans. Retrouvez <a href="/blog/">tous mes articles</a> et <a href="/projets/">mes projets</a>.</p>
+    </div>
+  </article>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <a href="/" class="brand">Jonas Sleiman</a>
+      <ul>
+        <li><a href="/">Accueil</a></li>
+        <li><a href="/projets/">Projets</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="https://github.com/YojoxSn" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://tryhackme.com/p/YojoxSn" target="_blank" rel="noopener">TryHackMe</a></li>
+      </ul>
+    </div>
+    <p class="legal">© 2026 Jonas Sleiman · Cybersécurité &amp; pentest · Orléans, France</p>
+  </div>
+</footer>
+</body>
+</html>
