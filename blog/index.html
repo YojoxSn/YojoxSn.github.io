@@ -41,7 +41,9 @@
       "inLanguage": "fr-FR",
       "isPartOf": { "@id": "https://yojoxsn.github.io/#website" },
       "author": { "@id": "https://yojoxsn.github.io/#person" },
-      "blogPost": []
+      "blogPost": [
+        { "@type": "BlogPosting", "headline": "Injection de commande et élévation de privilèges via PYTHONPATH", "url": "https://yojoxsn.github.io/blog/injection-de-commande-et-pythonpath/", "datePublished": "2026-10-18", "author": { "@id": "https://yojoxsn.github.io/#person" } }
+      ]
     },
     {
       "@type": "BreadcrumbList",
@@ -86,13 +88,13 @@
     <div class="wrap">
       <!-- ARTICLES : ajouter une carte par article, du plus récent au plus ancien (modèle dans _modeles/carte-article.html) -->
       <div class="grid" id="articles">
-        <div class="card reveal">
-          <div class="top">
-            <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg></div>
-            <h2 style="font-size:24px;margin:0">Premiers articles en préparation</h2>
-          </div>
-          <p>Les premiers writeups et tutoriels arrivent bientôt. En attendant, suivez ma progression sur <a href="https://tryhackme.com/p/YojoxSn" target="_blank" rel="noopener" style="text-decoration:underline">TryHackMe</a>.</p>
-        </div>
+        <a class="card reveal" href="/blog/injection-de-commande-et-pythonpath/">
+          <span class="pill">Tutoriel</span>
+          <h2 style="font-size:24px;margin:16px 0 0;font-weight:480;letter-spacing:.015em;line-height:1.2">Injection de commande et élévation de privilèges via PYTHONPATH</h2>
+          <p>Deux failles classiques du pentest expliquées pas à pas : obtenir un premier accès par injection de commande, puis devenir root en détournant PYTHONPATH avec sudo.</p>
+          <div class="meta">Jonas Sleiman · <time datetime="2026-10-18">18 octobre 2026</time></div>
+          <span class="more">Lire l'article <i>→</i></span>
+        </a>
       </div>
     </div>
   </section>

