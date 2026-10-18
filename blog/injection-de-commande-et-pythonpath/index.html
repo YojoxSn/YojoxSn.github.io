@@ -101,7 +101,16 @@
     <div class="prose">
       <p>Pendant mon entraînement, j'ai rencontré un enchaînement de deux failles que l'on retrouve très souvent en test d'intrusion : d'abord une <strong>injection de commande</strong> pour obtenir un premier accès, puis une <strong>élévation de privilèges</strong> qui exploite une mauvaise configuration de <code>sudo</code>. Plutôt que de raconter une machine précise, j'ai recréé la situation avec un exemple inventé, pour expliquer le mécanisme. Tout ce qui suit doit rester cantonné à vos propres machines ou à des plateformes d'entraînement qui l'autorisent.</p>
 
-      <h2>1. L'injection de commande</h2>
+      <h2>1. La reconnaissance</h2>
+      <p>Tout commence par la reconnaissance&nbsp;: savoir ce qui tourne sur la machine. Je lance un scan de tous les ports avec détection des versions&nbsp;:</p>
+      <pre><code>nmap -sV -p- IP_DE_LA_CIBLE</code></pre>
+      <p>Le scan me montre deux portes ouvertes&nbsp;: le <strong>SSH</strong> habituel sur le port 22, et surtout un <strong>service inhabituel sur un port élevé</strong>. C'est presque toujours ce service «&nbsp;maison&nbsp;», non standard, qui est le point d'entrée&nbsp;: il a été écrit par quelqu'un, donc il peut contenir une erreur.</p>
+      <p>Pour voir à quoi il ressemble, je m'y connecte directement avec <code>netcat</code>&nbsp;:</p>
+      <pre><code>nc IP_DE_LA_CIBLE PORT</code></pre>
+      <p>Le service m'accueille avec un menu texte&nbsp;: un petit salon de discussion, avec une option pour «&nbsp;envoyer un message&nbsp;» et une pour «&nbsp;faire un signalement&nbsp;». Détail capital&nbsp;: il précise que <strong>son code source est public</strong>. Je peux donc le lire tranquillement et chercher la faille dans le code plutôt qu'à l'aveugle. En parcourant ce code, je repère la ligne qui passe mon texte directement au système&nbsp;: la faille est là.</p>
+      <p>La leçon que je retiens de cette étape&nbsp;: un service non standard mérite toute l'attention, et quand le code source est accessible, on le lit en premier.</p>
+
+      <h2>2. L'injection de commande</h2>
       <p>Une injection de commande se produit quand un programme passe une donnée fournie par l'utilisateur <strong>directement au système</strong>, sans la contrôler. Imaginons un petit service écrit en Python qui enregistre un signalement&nbsp;:</p>
       <pre><code>import os
 
@@ -123,7 +132,7 @@ def signalement():
       <pre><code>python3 -c 'import pty; pty.spawn("/bin/bash")'</code></pre>
       <p>C'est une étape que je retiens&nbsp;: un shell instable n'est pas un échec, il se stabilise.</p>
 
-      <h2>2. L'élévation de privilèges via sudo et PYTHONPATH</h2>
+      <h2>3. L'élévation de privilèges via sudo et PYTHONPATH</h2>
       <p>Avoir un accès, c'est bien&nbsp;; devenir <code>root</code>, c'est l'objectif. Le premier réflexe est de regarder ce que l'utilisateur a le droit de lancer en tant que root&nbsp;:</p>
       <pre><code>sudo -l</code></pre>
       <p>Dans mon exemple, la réponse ressemble à ceci&nbsp;:</p>
