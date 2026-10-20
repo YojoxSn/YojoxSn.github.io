@@ -1,0 +1,68 @@
+name: Agent SEO & réseaux
+
+on:
+  schedule:
+    # Tous les jours à 09h00 UTC (11h00 en France l'été, 10h00 l'hiver).
+    - cron: "0 9 * * *"
+  workflow_dispatch:        # Déclenchement manuel depuis l'onglet Actions
+    inputs:
+      dry_run:
+        description: "Mode test (ne rien publier)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write           # pour committer state.json, feed.xml, sitemap.xml
+
+concurrency:
+  group: agent-seo          # un seul passage à la fois
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Installer les dépendances
+        run: pip install -r _agent/requirements.txt
+
+      - name: Lancer l'agent
+        env:
+          # Choix du fournisseur LLM : gemini | groq | ollama
+          LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'gemini' }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-3.5-flash-lite' }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_MODEL: ${{ vars.GROQ_MODEL || 'llama-3.1-8b-instant' }}
+          # Réseaux sociaux
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+          MASTODON_API_BASE: ${{ vars.MASTODON_API_BASE || 'https://infosec.exchange' }}
+          DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+          # SEO
+          INDEXNOW_KEY: ${{ vars.INDEXNOW_KEY }}
+          # Mode test : true au déclenchement manuel (défaut), sinon variable DRY_RUN
+          DRY_RUN: ${{ github.event.inputs.dry_run || vars.DRY_RUN || 'false' }}
+        run: python _agent/main.py
+
+      - name: Committer l'état et les fichiers SEO
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name  "agent-seo[bot]"
+          git config user.email "agent-seo@users.noreply.github.com"
+          git add _agent/state.json _agent/drafts.md feed.xml sitemap.xml
+          if git diff --cached --quiet; then
+            echo "Rien à committer."
+          else
+            git commit -m "Agent : mise à jour état, feed et sitemap [skip ci]"
+            git push
+          fi

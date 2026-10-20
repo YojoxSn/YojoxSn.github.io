@@ -1,0 +1,6 @@
+# Dépendances de l'agent (toutes gratuites, légères, officielles)
+requests>=2.31          # appels HTTP (LLM, Dev.to, IndexNow)
+beautifulsoup4>=4.12     # lecture du HTML des articles
+atproto>=0.0.55          # publication Bluesky (AT Protocol)
+Mastodon.py>=1.8         # publication Mastodon
+markdownify>=0.11        # conversion HTML -> Markdown pour Dev.to
