@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Blog cybersécurité de Jonas Sleiman</title>
+  <link href="https://yojoxsn.github.io/feed.xml" rel="self"/>
+  <link href="https://yojoxsn.github.io/blog/"/>
+  <id>https://yojoxsn.github.io/</id>
+  <updated>2026-10-21T00:00:00Z</updated>
+  <author><name>Jonas Sleiman</name></author>
+
+</feed>
