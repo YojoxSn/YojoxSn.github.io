@@ -1,7 +1,16 @@
 {
-  "articles": {},
+  "articles": {
+    "stats-2026-10-26": {
+      "slug": "",
+      "url": "https://tryhackme.com/p/YojoxSn",
+      "processed_at": "2026-10-26"
+    }
+  },
   "pending": {},
-  "last_post": {},
-  "last_stats_post": "",
-  "last_seo_check": ""
+  "last_post": {
+    "bluesky": "2026-10-26",
+    "mastodon": "2026-10-26"
+  },
+  "last_stats_post": "2026-10-26",
+  "last_seo_check": "2026-10-26"
 }
