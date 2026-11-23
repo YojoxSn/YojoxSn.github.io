@@ -19,13 +19,18 @@
       "slug": "",
       "url": "https://tryhackme.com/p/YojoxSn",
       "processed_at": "2026-11-16"
+    },
+    "stats-2026-11-23": {
+      "slug": "",
+      "url": "https://tryhackme.com/p/YojoxSn",
+      "processed_at": "2026-11-23"
     }
   },
   "pending": {},
   "last_post": {
-    "bluesky": "2026-11-16",
-    "mastodon": "2026-11-16"
+    "bluesky": "2026-11-23",
+    "mastodon": "2026-11-23"
   },
-  "last_stats_post": "2026-11-16",
-  "last_seo_check": "2026-11-16"
+  "last_stats_post": "2026-11-23",
+  "last_seo_check": "2026-11-23"
 }
